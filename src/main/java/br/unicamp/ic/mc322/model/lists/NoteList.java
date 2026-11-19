@@ -1,4 +1,6 @@
-package br.unicamp.ic.mc322.model;
+package br.unicamp.ic.mc322.model.lists;
+
+import br.unicamp.ic.mc322.model.Note;
 
 /**
  * Classe para a lista de notas Note.
