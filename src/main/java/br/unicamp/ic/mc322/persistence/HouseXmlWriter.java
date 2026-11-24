@@ -1,8 +1,5 @@
 package br.unicamp.ic.mc322.persistence;
 
-import java.lang.reflect.Field;
-import java.time.LocalDate;
-
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
@@ -17,11 +14,13 @@ import br.unicamp.ic.mc322.model.lists.TodoList;
 import br.unicamp.ic.mc322.service.House;
 import br.unicamp.ic.mc322.strategy.recurring.IntervalRecurringStrategy;
 import br.unicamp.ic.mc322.strategy.recurring.RecurringStrategy;
+
 public class HouseXmlWriter {
     private Document document;
-    HouseXmlWriter(){
 
+    HouseXmlWriter(){
     }
+
     Document write(House h) {
         if (h == null) {
             throw new SaveWriteException("Não é possível salvar uma casa que não existe.");
@@ -35,44 +34,52 @@ public class HouseXmlWriter {
 
         org.w3c.dom.Element root = document.createElement("house");
         root.setAttribute("version", HouseXml.VERSION);
-        root.setAttribute("name", h.getName() != null ? h.getName() : "");
+        root.setAttribute("name", h.getName());
         document.appendChild(root);
 
-        for (Object obj : h.getLists()) {
-            if (obj instanceof ElementList<?> list) {
-                root.appendChild(writeList(list));
-            }
+        for (ElementList<?> list : h.getLists()) {
+            root.appendChild(writeList(list));
         }
 
         return document;
     }
+
     private org.w3c.dom.Element writeList(ElementList<?> l) {
+        String type = l.getClass().getSimpleName();
+        if (!HouseXml.LIST_TYPES.contains(type)) {
+            throw new SaveWriteException("Tipo de lista não suportado no save: " + type);
+        }
+
         org.w3c.dom.Element listXml = document.createElement("list");
-        listXml.setAttribute("type", l.getClass().getSimpleName());
+        listXml.setAttribute("type", type);
         listXml.setAttribute("title", l.getTitle() != null ? l.getTitle() : "");
-        listXml.setAttribute("desc", l.getDesc() != null ? l.getDesc() : "");
+        setIfPresent(listXml, "desc", l.getDesc());
 
         if (l instanceof TodoList<?> todoList) {
             listXml.setAttribute("isCompleted", String.valueOf(todoList.isCompleted()));
         }
 
-        for (Object obj : l.getElements()) {
-            if (obj instanceof Element el) {
-                listXml.appendChild(writeElement(el));
-            }
+        for (Element el : l.getElements()) {
+            listXml.appendChild(writeElement(el));
         }
 
         return listXml;
     }
-    private  org.w3c.dom.Element writeElement(Element e) {
+
+    private org.w3c.dom.Element writeElement(Element e) {
+        String type = e.getClass().getSimpleName();
+        if (!HouseXml.ELEMENT_TYPES.contains(type)) {
+            throw new SaveWriteException("Tipo de elemento não suportado no save: " + type);
+        }
+
         org.w3c.dom.Element elXml = document.createElement("element");
-        elXml.setAttribute("type", e.getClass().getSimpleName());
-        elXml.setAttribute("title", e.getTitle() != null ? e.getTitle() : "");
-        elXml.setAttribute("desc", e.getDesc() != null ? e.getDesc() : "");
-        elXml.setAttribute("creationDate", e.getCreationDate() != null ? e.getCreationDate().toString() : "");
+        elXml.setAttribute("type", type);
+        elXml.setAttribute("title", e.getTitle());
+        setIfPresent(elXml, "desc", e.getDesc());
+        elXml.setAttribute("creationDate", e.getCreationDate().toString());
 
         if (e instanceof Task task) {
-            elXml.setAttribute("deadline", task.getDeadline() != null ? task.getDeadline().toString() : "");
+            elXml.setAttribute("deadline", task.getDeadline().toString());
             elXml.setAttribute("isStarred", String.valueOf(task.isStarred()));
             elXml.setAttribute("isCompleted", String.valueOf(task.isCompleted()));
 
@@ -84,31 +91,28 @@ public class HouseXmlWriter {
         if (e instanceof BuyingTask buyingTask) {
             elXml.setAttribute("cost", String.valueOf(buyingTask.getCost()));
             elXml.setAttribute("quantity", String.valueOf(buyingTask.getQuantity()));
-            elXml.setAttribute("unit", buyingTask.getUnit() != null ? buyingTask.getUnit() : "");
+            elXml.setAttribute("unit", buyingTask.getUnit());
         }
 
         if (e instanceof RecurringTask recurringTask) {
             RecurringStrategy strategy = recurringTask.getCurrRecurringStrategy();
-            if (strategy != null) {
-                elXml.setAttribute("strategyType", strategy.getClass().getSimpleName());
-                try {
-                    Field fromDateField = strategy.getClass().getDeclaredField("fromDate");
-                    fromDateField.setAccessible(true);
-                    LocalDate fromDate = (LocalDate) fromDateField.get(strategy);
-                    elXml.setAttribute("strategyFromDate", fromDate != null ? fromDate.toString() : "");
+            String strategyType = strategy.getClass().getSimpleName();
+            if (!HouseXml.STRATEGY_TYPES.contains(strategyType)) {
+                throw new SaveWriteException("Estratégia de recorrência não suportada no save: " + strategyType);
+            }
+            elXml.setAttribute("strategyType", strategyType);
 
-                    if (strategy instanceof IntervalRecurringStrategy) {
-                        Field intervalField = strategy.getClass().getDeclaredField("intervalDays");
-                        intervalField.setAccessible(true);
-                        int intervalDays = intervalField.getInt(strategy);
-                        elXml.setAttribute("strategyIntervalDays", String.valueOf(intervalDays));
-                    }
-                } catch (NoSuchFieldException | IllegalAccessException ex) {
-                    throw new SaveWriteException("Erro ao salvar a estratégia de recorrência.", ex);
-                }
+            if (strategy instanceof IntervalRecurringStrategy interval) {
+                elXml.setAttribute("strategyIntervalDays", String.valueOf(interval.getIntervalDays()));
             }
         }
 
         return elXml;
-}
+    }
+
+    private void setIfPresent(org.w3c.dom.Element xml, String name, String value) {
+        if (value != null) {
+            xml.setAttribute(name, value);
+        }
+    }
 }
