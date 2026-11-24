@@ -12,17 +12,15 @@ public class ShoppingList extends TodoList<BuyingTask>{
     public float calcTotalCost() {
         float sum = 0;
         for (BuyingTask item : this.getElements()) {
-            sum += item.getCost();
+            sum += item.getTotalCost();
         }
         this.totalCost = sum;
         return sum;
     }
 
+    /* Recalcula a cada leitura, pois itens podem mudar custo
+    ou quantidade depois de adicionados */
     public float getTotalCost() {
-        return totalCost;
-    }
-
-    public void setTotalCost(float totalCost) {
-        this.totalCost = totalCost;
+        return calcTotalCost();
     }
 }
