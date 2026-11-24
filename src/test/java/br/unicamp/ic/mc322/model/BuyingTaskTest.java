@@ -37,20 +37,26 @@ class BuyingTaskTest {
     void shouldThrowExceptionForInvalidConstructorArguments() {
         LocalDate deadline = LocalDate.now().plusDays(2);
 
-        // Custo zero ou negativo
+        // Custo negativo ou que não é número
         assertThrows(IllegalArgumentException.class, () ->
             new BuyingTask("Item", "Desc", deadline, -1.0f, 2.0f, "un")
         );
         assertThrows(IllegalArgumentException.class, () ->
-            new BuyingTask("Item", "Desc", deadline, 0.0f, 2.0f, "un")
+            new BuyingTask("Item", "Desc", deadline, Float.NaN, 2.0f, "un")
+        );
+        assertThrows(IllegalArgumentException.class, () ->
+            new BuyingTask("Item", "Desc", deadline, Float.POSITIVE_INFINITY, 2.0f, "un")
         );
 
-        // Quantidade zero ou negativa
+        // Quantidade zero, negativa ou que não é número
         assertThrows(IllegalArgumentException.class, () ->
             new BuyingTask("Item", "Desc", deadline, 10.0f, 0.0f, "un")
         );
         assertThrows(IllegalArgumentException.class, () ->
             new BuyingTask("Item", "Desc", deadline, 10.0f, -2.5f, "un")
+        );
+        assertThrows(IllegalArgumentException.class, () ->
+            new BuyingTask("Item", "Desc", deadline, 10.0f, Float.NaN, "un")
         );
 
         // Unidade nula ou vazia
@@ -79,15 +85,30 @@ class BuyingTaskTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenSettingNonPositiveCost() {
+    void shouldAcceptZeroCost() {
+        BuyingTask task = new BuyingTask("Sacolas", "Do mercado", LocalDate.now().plusDays(2), 0.0f, 3.0f, "un");
+        assertEquals(0.0f, task.getTotalCost(), DELTA);
+
+        task.setCost(2.0f);
+        task.setCost(0.0f);
+        assertEquals(0.0f, task.getCost(), DELTA);
+        assertEquals(0.0f, task.getTotalCost(), DELTA);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenSettingInvalidCost() {
         BuyingTask task = new BuyingTask("Comprar maçãs", "Fuji", LocalDate.now().plusDays(2), 8.0f, 2.5f, "kg");
 
         assertThrows(IllegalArgumentException.class, () ->
-            task.setCost(0.0f)
-        );
-        assertThrows(IllegalArgumentException.class, () ->
             task.setCost(-0.01f)
         );
+        assertThrows(IllegalArgumentException.class, () ->
+            task.setCost(Float.NaN)
+        );
+
+        // Custo e total não mudam depois de um valor inválido
+        assertEquals(8.0f, task.getCost(), DELTA);
+        assertEquals(20.0f, task.getTotalCost(), DELTA);
     }
 
     @Test
