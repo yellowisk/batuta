@@ -1,19 +1,19 @@
-package br.unicamp.ic.mc322.strategy;
+package br.unicamp.ic.mc322.strategy.recurring;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MonthlyRecurringStrategy implements RecurringStrategy {
+public class WeeklyRecurringStrategy implements RecurringStrategy {
 
-    public MonthlyRecurringStrategy() {}
+    public WeeklyRecurringStrategy() {}
 
     @Override
     public LocalDate getNextOccurrence(LocalDate fromDate) {
         if (fromDate == null)
             throw new IllegalArgumentException("A data de referência não pode ser nula.");
 
-        return fromDate.plusMonths(1);
+        return fromDate.plusWeeks(1);
     }
 
     @Override
@@ -26,7 +26,7 @@ public class MonthlyRecurringStrategy implements RecurringStrategy {
 
         List<LocalDate> occurrences = new ArrayList<>();
         for (int i = 1; i <= count; i++)
-            occurrences.add(fromDate.plusMonths(i));
+            occurrences.add(fromDate.plusWeeks(i));
 
         return occurrences;
     }

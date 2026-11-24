@@ -1,9 +1,9 @@
 package br.unicamp.ic.mc322.model;
 
-import br.unicamp.ic.mc322.strategy.IntervalRecurringStrategy;
-import br.unicamp.ic.mc322.strategy.MonthlyRecurringStrategy;
-import br.unicamp.ic.mc322.strategy.RecurringStrategy;
-import br.unicamp.ic.mc322.strategy.WeeklyRecurringStrategy;
+import br.unicamp.ic.mc322.strategy.recurring.IntervalRecurringStrategy;
+import br.unicamp.ic.mc322.strategy.recurring.MonthlyRecurringStrategy;
+import br.unicamp.ic.mc322.strategy.recurring.RecurringStrategy;
+import br.unicamp.ic.mc322.strategy.recurring.WeeklyRecurringStrategy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

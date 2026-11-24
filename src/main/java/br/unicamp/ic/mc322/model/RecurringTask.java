@@ -1,6 +1,6 @@
 package br.unicamp.ic.mc322.model;
 
-import br.unicamp.ic.mc322.strategy.RecurringStrategy;
+import br.unicamp.ic.mc322.strategy.recurring.RecurringStrategy;
 
 import java.time.LocalDate;
 

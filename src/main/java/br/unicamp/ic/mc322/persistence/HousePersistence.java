@@ -113,7 +113,7 @@ public class HousePersistence {
     }
     private void replace(Path newFile, Path target){
         try {
-            Files.move(newFile, target,StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE )
+            Files.move(newFile, target,StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
         } catch (IOException e) {
             throw new SaveWriteException ("Erro ao substituir o arquivo XML.", e);
         }

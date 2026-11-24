@@ -5,7 +5,7 @@ import org.w3c.dom.Document;
 import br.unicamp.ic.mc322.model.lists.*;
 import br.unicamp.ic.mc322.model.*;
 import br.unicamp.ic.mc322.service.*;
-import br.unicamp.ic.mc322.strategy.*;
+import br.unicamp.ic.mc322.strategy.recurring.*;
 import br.unicamp.ic.mc322.strategy.sorting.*;
 
 import org.w3c.dom.Node;
@@ -15,7 +15,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.function.Consumer;
 public class HouseXmlReader {
-    HouseXmlReader()
+    HouseXmlReader() {}
     House read(Document d){
         if (d == null) {
             throw new SaveReadException("Documento XML vazio.");
@@ -64,7 +64,7 @@ public class HouseXmlReader {
         }
 
         if ("ShoppingList".equals(type)) {
-            ShoppingList<BuyingTask> list = new ShoppingList<>(title, desc);
+            ShoppingList list = new ShoppingList(title, desc);
             list.setCompleted(Boolean.parseBoolean(xml.getAttribute("isCompleted")));
             NodeList children = xml.getChildNodes();
             for (int i = 0; i < children.getLength(); i++) {
@@ -127,16 +127,13 @@ public class HouseXmlReader {
                 RecurringStrategy strategy = null;
 
                 if (!strategyType.isEmpty()) {
-                    String fromDateStr = xml.getAttribute("strategyFromDate");
-                    LocalDate fromDate = fromDateStr.isEmpty() ? null : LocalDate.parse(fromDateStr);
-
                     if ("WeeklyRecurringStrategy".equals(strategyType)) {
-                        strategy = new WeeklyRecurringStrategy(fromDate);
+                        strategy = new WeeklyRecurringStrategy();
                     } else if ("MonthlyRecurringStrategy".equals(strategyType)) {
-                        strategy = new MonthlyRecurringStrategy(fromDate);
+                        strategy = new MonthlyRecurringStrategy();
                     } else if ("IntervalRecurringStrategy".equals(strategyType)) {
                         int intervalDays = Integer.parseInt(xml.getAttribute("strategyIntervalDays"));
-                        strategy = new IntervalRecurringStrategy(fromDate, intervalDays);
+                        strategy = new IntervalRecurringStrategy(intervalDays);
                     } else {
                         throw new SaveReadException("Estratégia de recorrência desconhecida: " + strategyType);
                     }

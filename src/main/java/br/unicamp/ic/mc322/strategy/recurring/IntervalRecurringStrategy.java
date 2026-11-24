@@ -1,4 +1,4 @@
-package br.unicamp.ic.mc322.strategy;
+package br.unicamp.ic.mc322.strategy.recurring;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

@@ -8,14 +8,15 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 
 import br.unicamp.ic.mc322.exception.SaveWriteException;
+import br.unicamp.ic.mc322.model.BuyingTask;
 import br.unicamp.ic.mc322.model.Element;
 import br.unicamp.ic.mc322.model.RecurringTask;
 import br.unicamp.ic.mc322.model.Task;
 import br.unicamp.ic.mc322.model.lists.ElementList;
 import br.unicamp.ic.mc322.model.lists.TodoList;
 import br.unicamp.ic.mc322.service.House;
-import br.unicamp.ic.mc322.strategy.IntervalRecurringStrategy;
-import br.unicamp.ic.mc322.strategy.RecurringStrategy;
+import br.unicamp.ic.mc322.strategy.recurring.IntervalRecurringStrategy;
+import br.unicamp.ic.mc322.strategy.recurring.RecurringStrategy;
 public class HouseXmlWriter {
     private Document document;
     HouseXmlWriter(){
