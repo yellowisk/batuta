@@ -164,6 +164,10 @@ public class HouseXmlReader {
         } else {
             throw new SaveReadException("Tipo de elemento desconhecido no XML: " + type);
         }
+
+        if (!creationDateStr.isEmpty()) {
+            element.setCreationDate(LocalDateTime.parse(creationDateStr));
+        }
         return element;
     }
     }

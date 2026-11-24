@@ -5,28 +5,16 @@ import java.time.LocalDateTime;
 public abstract class Element {
     private String title;
     private String desc;
-    private final LocalDateTime creationDate;
+    private LocalDateTime creationDate;
 
-    public Element(String title, String desc) {
-        if (title == null || title.isBlank()) {
-            throw new IllegalArgumentException("O título não pode ser nulo nem vazio.");
-        }
-
-        if (desc == null || desc.isBlank()) {
-            throw new IllegalArgumentException("A descrição não pode ser nula nem vazia.");
-        }
-        this.title = title;
-        this.desc = desc;
-        this.creationDate = LocalDateTime.now(); //
+    protected Element(String title, String desc) {
+        setTitle(title);
+        setDesc(desc);
+        this.creationDate = LocalDateTime.now();
     }
 
-    public Element(String title) {
-        if (title == null || title.isBlank()) {
-            throw new IllegalArgumentException("O título não pode ser nulo nem vazio.");
-        }
-
-        this.title = title;
-        this.creationDate = LocalDateTime.now();
+    protected Element(String title) {
+        this(title, null);
     }
 
     public String getTitle() {
@@ -44,14 +32,20 @@ public abstract class Element {
         return desc;
     }
 
+    // Descrição é opcional
     public void setDesc(String desc) {
-        if (desc == null || desc.isBlank()) {
-            throw new IllegalArgumentException("A descrição não pode ser nula nem vazia.");
-        }
-        this.desc = desc;
+        this.desc = (desc == null || desc.isBlank()) ? null : desc;
     }
 
     public LocalDateTime getCreationDate() {
         return creationDate;
+    }
+
+    // Usado ao carregar a casa salva, para restaurar a data original
+    public void setCreationDate(LocalDateTime creationDate) {
+        if (creationDate == null) {
+            throw new IllegalArgumentException("A data de criação não pode ser nula.");
+        }
+        this.creationDate = creationDate;
     }
 }
