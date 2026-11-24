@@ -45,8 +45,10 @@ public abstract class ElementList<T extends Element> {
         elements.add(e);
     }
 
+    /* O índice é a posição que o usuário vê nas telas,
+    ou seja, na lista ordenada (getSortedElements) */
     public void removeElement(int i) {
-        elements.remove(i);
+        elements.remove(getSortedElements().get(i));
     }
     public void clearList() {
         elements.clear();
