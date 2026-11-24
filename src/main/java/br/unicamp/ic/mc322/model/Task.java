@@ -18,8 +18,8 @@ public class Task extends Element {
         setDeadline(deadline);
     }
 
-    public boolean isDeadlineMet() {
-        return isCompleted && !LocalDate.now().isAfter(deadline);
+    public boolean isOverdue() {
+        return !isCompleted && LocalDate.now().isAfter(deadline);
     }
 
     public void addNote(Note n) {

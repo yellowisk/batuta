@@ -64,34 +64,28 @@ class TaskTest {
     }
 
     @Test
-    void isDeadlineMetShouldReturnFalseWhenTaskIsNotCompleted() {
+    void isOverdueShouldReturnTrueOnlyWhenPendingAndDeadlinePassed() {
         Task futureTask = new Task("Futura", LocalDate.now().plusDays(3));
         Task todayTask = new Task("Hoje", LocalDate.now());
         Task pastTask = new Task("Atrasada", LocalDate.now().minusDays(1));
 
-        assertFalse(futureTask.isDeadlineMet());
-        assertFalse(todayTask.isDeadlineMet());
-        assertFalse(pastTask.isDeadlineMet());
+        assertFalse(futureTask.isOverdue());
+
+        // Prazo hoje ainda não está atrasado
+        assertFalse(todayTask.isOverdue());
+        assertTrue(pastTask.isOverdue());
     }
 
     @Test
-    void isDeadlineMetShouldReturnTrueWhenCompletedOnOrBeforeDeadline() {
-        Task futureTask = new Task("Futura", LocalDate.now().plusDays(3));
-        Task todayTask = new Task("Hoje", LocalDate.now());
-
-        futureTask.setCompleted(true);
-        todayTask.setCompleted(true);
-
-        assertTrue(futureTask.isDeadlineMet());
-        assertTrue(todayTask.isDeadlineMet());
-    }
-
-    @Test
-    void isDeadlineMetShouldReturnFalseWhenCompletedAfterDeadline() {
+    void isOverdueShouldReturnFalseWhenCompleted() {
         Task pastTask = new Task("Atrasada", LocalDate.now().minusDays(1));
         pastTask.setCompleted(true);
 
-        assertFalse(pastTask.isDeadlineMet());
+        assertFalse(pastTask.isOverdue());
+
+        // Reabrir a tarefa volta a deixá-la atrasada
+        pastTask.setCompleted(false);
+        assertTrue(pastTask.isOverdue());
     }
 
     @Test

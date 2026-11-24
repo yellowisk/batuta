@@ -12,6 +12,9 @@ public abstract class ElementList<T extends Element> {
     private String desc;
     private List<T> elements = new ArrayList<>();
     private SortingStrategy<? super T> currSortingStrategy = new DateSortingStrategy();
+    /* Deixei a direção na própria lista, não na estratégia. Assim, duas
+    listas podem usar a mesma estratégia em direções diferentes */
+    private boolean descending = false;
     protected ElementList(String title, String desc) {
         this.title = title;
         this.desc = desc;
@@ -27,7 +30,7 @@ public abstract class ElementList<T extends Element> {
     public List<T> getSortedElements() {
         List<T> copy = new ArrayList<>(elements);
         if (currSortingStrategy != null) {
-            copy.sort(currSortingStrategy);
+            copy.sort(descending ? currSortingStrategy.reversed() : currSortingStrategy);
         }
         return copy;
     }
@@ -36,9 +39,11 @@ public abstract class ElementList<T extends Element> {
      * Alterna entre ordenação Ascendente e Decrescente.
      */
     public void toggleSortOrder() {
-        if (currSortingStrategy != null) {
-            currSortingStrategy.setDescending(!currSortingStrategy.isDescending());
-        }
+        descending = !descending;
+    }
+
+    public boolean isDescending() {
+        return descending;
     }
 
     public void addElement(T e) {

@@ -158,6 +158,7 @@ class BuyingTaskTest {
         assertEquals(note, task.getNote());
 
         task.setCompleted(true);
-        assertTrue(task.isDeadlineMet());
+        assertTrue(task.isCompleted());
+        assertFalse(task.isOverdue());
     }
 }
