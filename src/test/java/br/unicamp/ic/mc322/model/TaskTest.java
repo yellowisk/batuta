@@ -1,130 +1,183 @@
 package br.unicamp.ic.mc322.model;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class TaskTest {
+@DisplayName("Testes Task")
+public class TaskTest {
 
-    @Test
-    void shouldCreateTaskWithTitleDescAndDeadline() {
-        LocalDate deadline = LocalDate.now().plusDays(5);
-        Task task = new Task("Task com descrição", "Implementar testes", deadline);
+    private LocalDate deadline;
+    private Task study;
 
-        assertEquals("Task com descrição", task.getTitle());
-        assertEquals("Implementar testes", task.getDesc());
-        assertEquals(deadline, task.getDeadline());
-        assertFalse(task.isStarred());
-        assertFalse(task.isCompleted());
-        assertNull(task.getNote());
+    @BeforeEach
+    void setUp() {
+        deadline = LocalDate.of(2026, 11, 30);
+        study = new Task("Estudar Java", "Implementar testes", deadline);
     }
 
-    @Test
-    void shouldCreateTaskWithTitleAndDeadlineOnly() {
-        LocalDate deadline = LocalDate.now().plusDays(2);
-        Task task = new Task("Task sem descrição", deadline);
+    @Nested
+    @DisplayName("Construtor e Inicialização")
+    class ConstructorTests {
 
-        assertEquals("Task sem descrição", task.getTitle());
-        assertEquals(deadline, task.getDeadline());
-        assertFalse(task.isStarred());
-        assertFalse(task.isCompleted());
-        assertNull(task.getNote());
-        assertNull(task.getDesc());
+        @Test
+        @DisplayName("Deve inicializar com título, descrição e prazo, sem favorito, pendente e sem lembrete")
+        void shouldInitializeTask() {
+            assertEquals("Estudar Java", study.getTitle());
+            assertEquals("Implementar testes", study.getDesc());
+            assertEquals(deadline, study.getDeadline());
+            assertFalse(study.isStarred());
+            assertFalse(study.isCompleted());
+            assertNull(study.getNote());
+            assertNotNull(study.getCreationDate());
+        }
+
+        @Test
+        @DisplayName("Deve criar tarefa sem descrição")
+        void shouldInitializeTaskWithoutDescription() {
+            Task task = new Task("Pagar luz", deadline);
+
+            assertEquals("Pagar luz", task.getTitle());
+            assertNull(task.getDesc());
+            assertEquals(deadline, task.getDeadline());
+
+            assertNull(new Task("Pagar luz", "   ", deadline).getDesc());
+        }
+
+        @Test
+        @DisplayName("Deve barrar título inválido e prazo nulo nos dois construtores")
+        void shouldRejectInvalidArguments() {
+            assertThrows(IllegalArgumentException.class,
+                    () -> new Task(null, "Descrição", deadline));
+            assertThrows(IllegalArgumentException.class,
+                    () -> new Task("", "Descrição", deadline));
+            assertThrows(IllegalArgumentException.class,
+                    () -> new Task("Título", "Descrição", null));
+            assertThrows(IllegalArgumentException.class,
+                    () -> new Task("   ", deadline));
+            assertThrows(IllegalArgumentException.class,
+                    () -> new Task("Título", null));
+        }
     }
 
-    @Test
-    void shouldThrowExceptionWhenDeadlineIsNullInConstructors() {
-        assertThrows(IllegalArgumentException.class, () ->
-            new Task("Título", "Descrição", null)
-        );
+    @Nested
+    @DisplayName("Prazo, Favorito e Conclusão")
+    class StateTests {
 
-        assertThrows(IllegalArgumentException.class, () ->
-            new Task("Título", null)
-        );
+        @Test
+        @DisplayName("Deve trocar o prazo e barrar prazo nulo mantendo o anterior")
+        void shouldUpdateDeadline() {
+            LocalDate newDeadline = LocalDate.of(2026, 12, 10);
+            study.setDeadline(newDeadline);
+            assertEquals(newDeadline, study.getDeadline());
+
+            assertThrows(IllegalArgumentException.class,
+                    () -> study.setDeadline(null));
+            assertEquals(newDeadline, study.getDeadline());
+        }
+
+        @Test
+        @DisplayName("Deve marcar e desmarcar favorito e conclusão")
+        void shouldToggleStarredAndCompleted() {
+            study.setStarred(true);
+            assertTrue(study.isStarred());
+            study.setStarred(false);
+            assertFalse(study.isStarred());
+
+            study.setCompleted(true);
+            assertTrue(study.isCompleted());
+            study.setCompleted(false);
+            assertFalse(study.isCompleted());
+        }
     }
 
-    @Test
-    void shouldThrowExceptionWhenSettingNullDeadline() {
-        Task task = new Task("Título", LocalDate.now().plusDays(1));
+    @Nested
+    @DisplayName("Tarefa Atrasada")
+    class OverdueTests {
 
-        assertThrows(IllegalArgumentException.class, () ->
-            task.setDeadline(null)
-        );
+        @Test
+        @DisplayName("Deve estar atrasada só quando pendente e com prazo antes de hoje")
+        void shouldBeOverdueOnlyWhenPendingAndPastDeadline() {
+            LocalDate today = LocalDate.now();
+
+            assertFalse(new Task("Futura", today.plusDays(3)).isOverdue());
+            assertFalse(new Task("Hoje", today).isOverdue());
+            assertTrue(new Task("Atrasada", today.minusDays(1)).isOverdue());
+        }
+
+        @Test
+        @DisplayName("Tarefa concluída nunca está atrasada; reabrir volta a deixá-la atrasada")
+        void shouldNotBeOverdueWhenCompleted() {
+            Task late = new Task("Atrasada", LocalDate.now().minusDays(1));
+
+            late.setCompleted(true);
+            assertFalse(late.isOverdue());
+
+            late.setCompleted(false);
+            assertTrue(late.isOverdue());
+        }
     }
 
-    @Test
-    void shouldUpdateDeadlineSuccessfully() {
-        Task task = new Task("Título", LocalDate.now().plusDays(1));
-        LocalDate newDeadline = LocalDate.now().plusDays(10);
+    @Nested
+    @DisplayName("Lembrete")
+    class NoteTests {
 
-        task.setDeadline(newDeadline);
+        @Test
+        @DisplayName("Deve adicionar, trocar e remover o lembrete")
+        void shouldAddReplaceAndRemoveNote() {
+            Note first = new Note("Nota 1", "Ler sobre JUnit");
+            Note second = new Note("Nota 2", "Praticar assertions");
 
-        assertEquals(newDeadline, task.getDeadline());
-    }
+            study.addNote(first);
+            assertSame(first, study.getNote());
 
-    @Test
-    void isOverdueShouldReturnTrueOnlyWhenPendingAndDeadlinePassed() {
-        Task futureTask = new Task("Futura", LocalDate.now().plusDays(3));
-        Task todayTask = new Task("Hoje", LocalDate.now());
-        Task pastTask = new Task("Atrasada", LocalDate.now().minusDays(1));
+            study.addNote(second);
+            assertSame(second, study.getNote());
 
-        assertFalse(futureTask.isOverdue());
+            study.removeNote();
+            assertNull(study.getNote());
 
-        // Prazo hoje ainda não está atrasado
-        assertFalse(todayTask.isOverdue());
-        assertTrue(pastTask.isOverdue());
-    }
+            study.removeNote();
+            assertNull(study.getNote());
+        }
 
-    @Test
-    void isOverdueShouldReturnFalseWhenCompleted() {
-        Task pastTask = new Task("Atrasada", LocalDate.now().minusDays(1));
-        pastTask.setCompleted(true);
+        @Test
+        @DisplayName("Deve barrar lembrete nulo mantendo o anterior")
+        void shouldRejectNullNote() {
+            Note note = new Note("Nota", null);
+            study.addNote(note);
 
-        assertFalse(pastTask.isOverdue());
+            assertThrows(IllegalArgumentException.class,
+                    () -> study.addNote(null));
+            assertSame(note, study.getNote());
+        }
 
-        // Reabrir a tarefa volta a deixá-la atrasada
-        pastTask.setCompleted(false);
-        assertTrue(pastTask.isOverdue());
-    }
+        @Test
+        @DisplayName("Remover o lembrete não deve alterar a tarefa")
+        void shouldKeepTaskWhenRemovingNote() {
+            LocalDateTime created = study.getCreationDate();
+            study.setStarred(true);
+            study.addNote(new Note("Nota", null));
 
-    @Test
-    void shouldAddReplaceAndRemoveNote() {
-        Task task = new Task("Estudar Java", LocalDate.now().plusDays(1));
-        Note firstNote = new Note("Nota 1", "Ler sobre JUnit 5");
-        Note secondNote = new Note("Nota 2", "Praticar assertions");
+            study.removeNote();
 
-        task.addNote(firstNote);
-        assertEquals(firstNote, task.getNote());
-
-        task.addNote(secondNote);
-        assertEquals(secondNote, task.getNote());
-
-        task.removeNote();
-        assertNull(task.getNote());
-    }
-
-    @Test
-    void shouldThrowExceptionWhenAddingNullNote() {
-        Task task = new Task("Estudar Java", LocalDate.now().plusDays(1));
-
-        assertThrows(IllegalArgumentException.class, () ->
-            task.addNote(null)
-        );
-    }
-
-    @Test
-    void shouldToggleStarredAndCompletedFlags() {
-        Task task = new Task("Tarefa", LocalDate.now().plusDays(1));
-
-        task.setStarred(true);
-        assertTrue(task.isStarred());
-        task.setStarred(false);
-        assertFalse(task.isStarred());
-
-        task.setCompleted(true);
-        assertTrue(task.isCompleted());
-        task.setCompleted(false);
-        assertFalse(task.isCompleted());
+            assertEquals("Estudar Java", study.getTitle());
+            assertEquals(deadline, study.getDeadline());
+            assertEquals(created, study.getCreationDate());
+            assertTrue(study.isStarred());
+            assertFalse(study.isCompleted());
+        }
     }
 }

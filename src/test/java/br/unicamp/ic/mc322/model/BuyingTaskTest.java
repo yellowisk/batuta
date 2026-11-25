@@ -1,164 +1,195 @@
 package br.unicamp.ic.mc322.model;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class BuyingTaskTest {
+@DisplayName("Testes BuyingTask")
+public class BuyingTaskTest {
 
     private static final float DELTA = 0.0001f;
 
-    @Test
-    void shouldCreateBuyingTaskAndCalculateInitialTotalCost() {
-        LocalDate deadline = LocalDate.now().plusDays(3);
-        BuyingTask task = new BuyingTask("Comprar café", "Café em grãos torra média", deadline, 35.50f, 2.0f, "pacotes");
+    private LocalDate deadline;
+    private BuyingTask coffee;
 
-        assertEquals("Comprar café", task.getTitle());
-        assertEquals("Café em grãos torra média", task.getDesc());
-        assertEquals(deadline, task.getDeadline());
-        assertEquals(35.50f, task.getCost(), DELTA);
-        assertEquals(2.0f, task.getQuantity(), DELTA);
-        assertEquals("pacotes", task.getUnit());
-        assertEquals(71.00f, task.getTotalCost(), DELTA);
-        assertFalse(task.isCompleted());
-        assertFalse(task.isStarred());
+    @BeforeEach
+    void setUp() {
+        deadline = LocalDate.of(2026, 11, 30);
+        coffee = new BuyingTask("Comprar café", "3 Corações se tiver", deadline, 35.50f, 2.0f, "pacotes");
     }
 
-    @Test
-    void shouldBeAnInstanceOfTaskAndElement() {
-        BuyingTask task = new BuyingTask("Comprar leite", "Integral", LocalDate.now().plusDays(1), 5.0f, 3.0f, "litros");
+    @Nested
+    @DisplayName("Construtor e Inicialização")
+    class ConstructorTests {
 
-        assertInstanceOf(Task.class, task);
-        assertInstanceOf(Element.class, task);
+        @Test
+        @DisplayName("Deve inicializar com os dados do item e calcular o custo total")
+        void shouldInitializeBuyingTask() {
+            assertEquals("Comprar café", coffee.getTitle());
+            assertEquals("3 Corações se tiver", coffee.getDesc());
+            assertEquals(deadline, coffee.getDeadline());
+            assertEquals(35.50f, coffee.getCost(), DELTA);
+            assertEquals(2.0f, coffee.getQuantity(), DELTA);
+            assertEquals("pacotes", coffee.getUnit());
+            assertEquals(71.00f, coffee.getTotalCost(), DELTA);
+            assertFalse(coffee.isCompleted());
+            assertFalse(coffee.isStarred());
+
+            assertNull(new BuyingTask("Sacolas", null, deadline, 1.0f, 1.0f, "un").getDesc());
+        }
+
+        @Test
+        @DisplayName("Deve barrar custo, quantidade, unidade, título e prazo inválidos")
+        void shouldRejectInvalidArguments() {
+            // Custo negativo ou que não é número
+            assertThrows(IllegalArgumentException.class,
+                    () -> new BuyingTask("Item", null, deadline, -1.0f, 2.0f, "un"));
+            assertThrows(IllegalArgumentException.class,
+                    () -> new BuyingTask("Item", null, deadline, Float.NaN, 2.0f, "un"));
+            assertThrows(IllegalArgumentException.class,
+                    () -> new BuyingTask("Item", null, deadline, Float.POSITIVE_INFINITY, 2.0f, "un"));
+
+            // Quantidade zero, negativa ou que não é número
+            assertThrows(IllegalArgumentException.class,
+                    () -> new BuyingTask("Item", null, deadline, 10.0f, 0.0f, "un"));
+            assertThrows(IllegalArgumentException.class,
+                    () -> new BuyingTask("Item", null, deadline, 10.0f, -2.5f, "un"));
+            assertThrows(IllegalArgumentException.class,
+                    () -> new BuyingTask("Item", null, deadline, 10.0f, Float.NaN, "un"));
+
+            assertThrows(IllegalArgumentException.class,
+                    () -> new BuyingTask("Item", null, deadline, 10.0f, 1.0f, null));
+            assertThrows(IllegalArgumentException.class,
+                    () -> new BuyingTask("Item", null, deadline, 10.0f, 1.0f, " "));
+            assertThrows(IllegalArgumentException.class,
+                    () -> new BuyingTask(" ", null, deadline, 10.0f, 1.0f, "un"));
+            assertThrows(IllegalArgumentException.class,
+                    () -> new BuyingTask("Item", null, null, 10.0f, 1.0f, "un"));
+        }
     }
 
-    @Test
-    void shouldThrowExceptionForInvalidConstructorArguments() {
-        LocalDate deadline = LocalDate.now().plusDays(2);
+    @Nested
+    @DisplayName("Custo")
+    class CostTests {
 
-        // Custo negativo ou que não é número
-        assertThrows(IllegalArgumentException.class, () ->
-            new BuyingTask("Item", "Desc", deadline, -1.0f, 2.0f, "un")
-        );
-        assertThrows(IllegalArgumentException.class, () ->
-            new BuyingTask("Item", "Desc", deadline, Float.NaN, 2.0f, "un")
-        );
-        assertThrows(IllegalArgumentException.class, () ->
-            new BuyingTask("Item", "Desc", deadline, Float.POSITIVE_INFINITY, 2.0f, "un")
-        );
+        @Test
+        @DisplayName("Deve recalcular o total ao trocar o custo")
+        void shouldRecalculateTotalWhenCostChanges() {
+            coffee.setCost(40.0f);
 
-        // Quantidade zero, negativa ou que não é número
-        assertThrows(IllegalArgumentException.class, () ->
-            new BuyingTask("Item", "Desc", deadline, 10.0f, 0.0f, "un")
-        );
-        assertThrows(IllegalArgumentException.class, () ->
-            new BuyingTask("Item", "Desc", deadline, 10.0f, -2.5f, "un")
-        );
-        assertThrows(IllegalArgumentException.class, () ->
-            new BuyingTask("Item", "Desc", deadline, 10.0f, Float.NaN, "un")
-        );
+            assertEquals(40.0f, coffee.getCost(), DELTA);
+            assertEquals(80.0f, coffee.getTotalCost(), DELTA);
+        }
 
-        // Unidade nula ou vazia
-        assertThrows(IllegalArgumentException.class, () ->
-            new BuyingTask("Item", "Desc", deadline, 10.0f, 1.0f, null)
-        );
-        assertThrows(IllegalArgumentException.class, () ->
-            new BuyingTask("Item", "Desc", deadline, 10.0f, 1.0f, " ")
-        );
+        @Test
+        @DisplayName("Deve aceitar custo zero")
+        void shouldAcceptZeroCost() {
+            BuyingTask bags = new BuyingTask("Sacolas", null, deadline, 0.0f, 3.0f, "un");
+            assertEquals(0.0f, bags.getTotalCost(), DELTA);
 
-        // Data de entrega nula (herdada de Task)
-        assertThrows(IllegalArgumentException.class, () ->
-            new BuyingTask("Item", "Desc", null, 10.0f, 1.0f, "un")
-        );
+            coffee.setCost(0.0f);
+            assertEquals(0.0f, coffee.getTotalCost(), DELTA);
+        }
+
+        @Test
+        @DisplayName("Deve barrar custo inválido mantendo custo e total anteriores")
+        void shouldRejectInvalidCost() {
+            assertThrows(IllegalArgumentException.class,
+                    () -> coffee.setCost(-0.01f));
+            assertThrows(IllegalArgumentException.class,
+                    () -> coffee.setCost(Float.NaN));
+
+            assertEquals(35.50f, coffee.getCost(), DELTA);
+            assertEquals(71.00f, coffee.getTotalCost(), DELTA);
+        }
     }
 
-    @Test
-    void shouldRecalculateTotalCostWhenCostChanges() {
-        BuyingTask task = new BuyingTask("Comprar maçãs", "Fuji", LocalDate.now().plusDays(2), 8.0f, 2.5f, "kg");
-        assertEquals(20.0f, task.getTotalCost(), DELTA);
+    @Nested
+    @DisplayName("Quantidade")
+    class QuantityTests {
 
-        task.setCost(10.0f);
+        @Test
+        @DisplayName("Deve recalcular o total ao trocar a quantidade, inclusive fracionada")
+        void shouldRecalculateTotalWhenQuantityChanges() {
+            coffee.setQuantity(3.0f);
+            assertEquals(3.0f, coffee.getQuantity(), DELTA);
+            assertEquals(106.50f, coffee.getTotalCost(), DELTA);
 
-        assertEquals(10.0f, task.getCost(), DELTA);
-        assertEquals(25.0f, task.getTotalCost(), DELTA);
+            BuyingTask apples = new BuyingTask("Maçã", null, deadline, 8.0f, 2.5f, "kg");
+            assertEquals(20.0f, apples.getTotalCost(), DELTA);
+        }
+
+        @Test
+        @DisplayName("Custo e quantidade trocados em sequência devem manter o total consistente")
+        void shouldKeepTotalConsistent() {
+            coffee.setCost(10.0f);
+            coffee.setQuantity(4.0f);
+
+            assertEquals(coffee.getCost() * coffee.getQuantity(), coffee.getTotalCost(), DELTA);
+            assertEquals(coffee.calcTotalCost(), coffee.getTotalCost(), DELTA);
+        }
+
+        @Test
+        @DisplayName("Deve barrar quantidade inválida mantendo quantidade e total anteriores")
+        void shouldRejectInvalidQuantity() {
+            assertThrows(IllegalArgumentException.class,
+                    () -> coffee.setQuantity(0.0f));
+            assertThrows(IllegalArgumentException.class,
+                    () -> coffee.setQuantity(-1.0f));
+            assertThrows(IllegalArgumentException.class,
+                    () -> coffee.setQuantity(Float.POSITIVE_INFINITY));
+
+            assertEquals(2.0f, coffee.getQuantity(), DELTA);
+            assertEquals(71.00f, coffee.getTotalCost(), DELTA);
+        }
     }
 
-    @Test
-    void shouldAcceptZeroCost() {
-        BuyingTask task = new BuyingTask("Sacolas", "Do mercado", LocalDate.now().plusDays(2), 0.0f, 3.0f, "un");
-        assertEquals(0.0f, task.getTotalCost(), DELTA);
+    @Nested
+    @DisplayName("Unidade")
+    class UnitTests {
 
-        task.setCost(2.0f);
-        task.setCost(0.0f);
-        assertEquals(0.0f, task.getCost(), DELTA);
-        assertEquals(0.0f, task.getTotalCost(), DELTA);
+        @Test
+        @DisplayName("Deve trocar a unidade e barrar unidade inválida mantendo a anterior")
+        void shouldUpdateUnit() {
+            coffee.setUnit("kg");
+            assertEquals("kg", coffee.getUnit());
+
+            assertThrows(IllegalArgumentException.class,
+                    () -> coffee.setUnit(null));
+            assertThrows(IllegalArgumentException.class,
+                    () -> coffee.setUnit(""));
+            assertThrows(IllegalArgumentException.class,
+                    () -> coffee.setUnit("   "));
+            assertEquals("kg", coffee.getUnit());
+        }
     }
 
-    @Test
-    void shouldThrowExceptionWhenSettingInvalidCost() {
-        BuyingTask task = new BuyingTask("Comprar maçãs", "Fuji", LocalDate.now().plusDays(2), 8.0f, 2.5f, "kg");
+    @Nested
+    @DisplayName("Comportamento Herdado de Task")
+    class InheritedTests {
 
-        assertThrows(IllegalArgumentException.class, () ->
-            task.setCost(-0.01f)
-        );
-        assertThrows(IllegalArgumentException.class, () ->
-            task.setCost(Float.NaN)
-        );
+        @Test
+        @DisplayName("Deve receber lembrete e ser concluído como qualquer tarefa")
+        void shouldBehaveAsTask() {
+            Note note = new Note("Promoção", "Verificar cupom de desconto");
+            coffee.addNote(note);
+            assertSame(note, coffee.getNote());
 
-        // Custo e total não mudam depois de um valor inválido
-        assertEquals(8.0f, task.getCost(), DELTA);
-        assertEquals(20.0f, task.getTotalCost(), DELTA);
-    }
-
-    @Test
-    void shouldRecalculateTotalCostWhenQuantityChanges() {
-        BuyingTask task = new BuyingTask("Comprar arroz", "Tipo 1", LocalDate.now().plusDays(4), 22.0f, 1.0f, "sacos");
-        assertEquals(22.0f, task.getTotalCost(), DELTA);
-
-        task.setQuantity(3.0f);
-
-        assertEquals(3.0f, task.getQuantity(), DELTA);
-        assertEquals(66.0f, task.getTotalCost(), DELTA);
-    }
-
-    @Test
-    void shouldThrowExceptionWhenSettingNonPositiveQuantity() {
-        BuyingTask task = new BuyingTask("Comprar arroz", "Tipo 1", LocalDate.now().plusDays(4), 22.0f, 1.0f, "sacos");
-
-        assertThrows(IllegalArgumentException.class, () ->
-            task.setQuantity(0.0f)
-        );
-        assertThrows(IllegalArgumentException.class, () ->
-            task.setQuantity(-1.0f)
-        );
-    }
-
-    @Test
-    void shouldUpdateUnitAndValidateInvalidUnits() {
-        BuyingTask task = new BuyingTask("Comprar tecido", "Algodão", LocalDate.now().plusDays(5), 15.0f, 2.0f, "metros");
-
-        task.setUnit("rolos");
-        assertEquals("rolos", task.getUnit());
-
-        assertThrows(IllegalArgumentException.class, () ->
-            task.setUnit(null)
-        );
-        assertThrows(IllegalArgumentException.class, () ->
-            task.setUnit("")
-        );
-    }
-
-    @Test
-    void shouldInheritTaskBehaviorLikeCompletionAndNotes() {
-        BuyingTask task = new BuyingTask("Comprar arroz", "Tipo 1", LocalDate.now().plusDays(1), 90.0f, 1.0f, "un");
-        Note note = new Note("Promoção", "Verificar cupom de desconto");
-
-        task.addNote(note);
-        assertEquals(note, task.getNote());
-
-        task.setCompleted(true);
-        assertTrue(task.isCompleted());
-        assertFalse(task.isOverdue());
+            coffee.setStarred(true);
+            coffee.setCompleted(true);
+            assertTrue(coffee.isStarred());
+            assertTrue(coffee.isCompleted());
+            assertFalse(coffee.isOverdue());
+        }
     }
 }
