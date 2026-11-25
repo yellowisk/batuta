@@ -1,4 +1,4 @@
-package br.unicamp.ic.mc322.service;
+package br.unicamp.ic.mc322.model;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -27,7 +27,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import br.unicamp.ic.mc322.exception.SaveWriteException;
 import br.unicamp.ic.mc322.exception.SaveReadException;
-import br.unicamp.ic.mc322.service.House;
+import br.unicamp.ic.mc322.model.House;
 
 public class HousePersistence {
     public static final Path DEFAULT_PATH = Paths.get("house.xml");

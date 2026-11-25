@@ -4,7 +4,6 @@ import br.unicamp.ic.mc322.exception.SaveReadException;
 import org.w3c.dom.Document;
 import br.unicamp.ic.mc322.model.lists.*;
 import br.unicamp.ic.mc322.model.*;
-import br.unicamp.ic.mc322.service.*;
 import br.unicamp.ic.mc322.strategy.recurring.*;
 
 import org.w3c.dom.Node;

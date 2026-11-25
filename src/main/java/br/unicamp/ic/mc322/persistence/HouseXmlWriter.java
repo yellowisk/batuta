@@ -11,7 +11,7 @@ import br.unicamp.ic.mc322.model.RecurringTask;
 import br.unicamp.ic.mc322.model.Task;
 import br.unicamp.ic.mc322.model.lists.ElementList;
 import br.unicamp.ic.mc322.model.lists.TodoList;
-import br.unicamp.ic.mc322.service.House;
+import br.unicamp.ic.mc322.model.House;
 import br.unicamp.ic.mc322.strategy.recurring.IntervalRecurringStrategy;
 import br.unicamp.ic.mc322.strategy.recurring.RecurringStrategy;
 
