@@ -14,6 +14,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.xml.sax.SAXException;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -106,6 +108,22 @@ public class HousePersistenceErrorsTest {
             write(xml.substring(0, xml.length() / 2));
 
             assertInstanceOf(SAXException.class, assertLoadFails().getCause());
+        }
+
+        @Test
+        @DisplayName("XML inválido não deve imprimir nada no terminal")
+        void shouldNotPrintParserErrors() throws Exception {
+            write("<house");
+            PrintStream originalErr = System.err;
+            ByteArrayOutputStream err = new ByteArrayOutputStream();
+            System.setErr(new PrintStream(err));
+            try {
+                assertLoadFails();
+            } finally {
+                System.setErr(originalErr);
+            }
+
+            assertEquals("", err.toString());
         }
     }
 

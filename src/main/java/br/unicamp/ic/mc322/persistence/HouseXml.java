@@ -6,6 +6,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.util.Set;
 
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXParseException;
+
 public final class HouseXml {
     static final String VERSION= "1.0";
 
@@ -20,6 +23,27 @@ public final class HouseXml {
     static DocumentBuilder newParser() throws ParserConfigurationException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-        return factory.newDocumentBuilder();
+        DocumentBuilder parser = factory.newDocumentBuilder();
+        parser.setErrorHandler(new SilentErrorHandler());
+        return parser;
+    }
+
+    /* O handler padrão imprime "[Fatal Error]" no
+     terminal, mas queremos ele como exceção
+     */
+    private static final class SilentErrorHandler implements ErrorHandler {
+        @Override
+        public void warning(SAXParseException e) {
+        }
+
+        @Override
+        public void error(SAXParseException e) throws SAXParseException {
+            throw e;
+        }
+
+        @Override
+        public void fatalError(SAXParseException e) throws SAXParseException {
+            throw e;
+        }
     }
 }
