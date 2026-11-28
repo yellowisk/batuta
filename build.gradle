@@ -16,25 +16,6 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(25)
-    }
-}
-
-javafx {
-    version = '25.0.5'
-    modules = ['javafx.controls']
-}
-
-application {
-    mainClass = 'br.unicamp.ic.mc322.Main'
-}
-
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
-}
-
 test {
     useJUnitPlatform()
     testLogging {

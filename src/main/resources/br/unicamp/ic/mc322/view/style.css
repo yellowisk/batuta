@@ -1,0 +1,358 @@
+/* ==========================================================================
+   FONTES
+   ========================================================================== */
+
+@font-face {
+    font-family: 'Bryndan Write';
+    src: url('fonts/BryndanWrite-Regular.ttf');
+}
+
+@font-face {
+    font-family: 'Nunito';
+    src: url('fonts/Nunito-Regular.ttf');
+}
+
+@font-face {
+    font-family: 'Nunito';
+    font-weight: 300;
+    src: url('fonts/Nunito-Light.ttf');
+}
+
+@font-face {
+    font-family: 'Nunito';
+    font-weight: 500;
+    src: url('fonts/Nunito-Medium.ttf');
+}
+
+@font-face {
+    font-family: 'Nunito';
+    font-weight: bold;
+    src: url('fonts/Nunito-Bold.ttf');
+}
+
+.root {
+    -fx-font-family: "Nunito", "Segoe UI", sans-serif;
+    -fx-font-size: 14px;
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #000000;
+
+    -color-ink: #000000;
+    -color-neutral-dark: #a2a9b4;
+    -color-neutral-mid: #c8d1d9;
+    -color-neutral-light: #d9dee6;
+    -color-surface: #eef1f5;
+    -color-white: #ffffff;
+
+    -color-primary: #dd919f;
+    -color-primary-hover: #d17c8c;
+    -color-accent: #5d8c96;
+    -color-accent-light: #c1dadf;
+    -color-navy: #1d3557;
+    -color-danger: #e63946;
+}
+
+.font-display-title {
+    -fx-font-family: "Bryndan Write";
+    -fx-font-size: 32px;
+    -fx-text-fill: -color-ink;
+}
+
+.font-heading-1 {
+    -fx-font-family: "Bryndan Write";
+    -fx-font-size: 28px;
+    -fx-text-fill: -color-navy;
+}
+
+.font-heading-2 {
+    -fx-font-family: "Bryndan Write";
+    -fx-font-size: 20px;
+    -fx-text-fill: -color-navy;
+}
+
+.font-heading-3 {
+    -fx-font-family: "Nunito";
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+    -fx-text-fill: -color-ink;
+}
+
+.font-body-bold {
+    -fx-font-family: "Nunito";
+    -fx-font-weight: bold;
+}
+
+.font-body-medium {
+    -fx-font-family: "Nunito";
+    -fx-font-weight: 500;
+}
+
+.font-body-regular {
+    -fx-font-family: "Nunito";
+    -fx-font-weight: normal;
+}
+
+.font-body-light {
+    -fx-font-family: "Nunito";
+    -fx-font-weight: 300;
+}
+
+.font-caption {
+    -fx-text-fill: -color-neutral-dark;
+    -fx-font-size: 12px;
+}
+
+.font-text-danger {
+    -fx-text-fill: -color-danger;
+    -fx-font-weight: bold;
+}
+
+/* ==========================================================================
+   BOTÕES
+   ========================================================================== */
+
+.button {
+    -fx-font-family: "Nunito";
+    -fx-font-weight: 500;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+    -fx-padding: 7px 16px;
+    -fx-cursor: hand;
+}
+
+/* Fundo sólido */
+
+.btn-primary {
+    -fx-background-color: -color-primary;
+    -fx-text-fill: -color-white;
+}
+.btn-primary:hover {
+    -fx-background-color: -color-primary-hover;
+}
+
+.btn-secondary {
+    -fx-background-color: -color-neutral-dark;
+    -fx-text-fill: -color-white;
+}
+.btn-secondary:hover {
+    -fx-background-color: #8f97a3;
+}
+
+.btn-muted {
+    -fx-background-color: -color-neutral-mid;
+    -fx-text-fill: -color-white;
+}
+
+/* Sombreamento (combinar com o primary ou secondary */
+.btn-elevated {
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.28), 0, 0, 0, 3);
+}
+.btn-elevated:pressed {
+    -fx-translate-y: 2px;
+    -fx-effect: none;
+}
+
+/* Botão vazado */
+.btn-outline {
+    -fx-background-color: transparent;
+    -fx-border-color: -color-neutral-dark;
+    -fx-border-width: 2px;
+    -fx-text-fill: -color-neutral-dark;
+}
+.btn-outline:hover {
+    -fx-background-color: -color-neutral-light;
+    -fx-text-fill: -color-ink;
+}
+
+/* Botão texto sublinhado */
+.btn-link {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: -color-neutral-dark;
+    -fx-underline: true;
+    -fx-padding: 4px 8px;
+}
+
+/* Botão ícone/fechar ('x') */
+.btn-icon {
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-ink;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-padding: 2px 6px;
+}
+.btn-icon:hover {
+    -fx-text-fill: -color-primary;
+}
+
+/* ==========================================================================
+   FORMULÁRIO
+   ========================================================================== */
+
+/* Campo de entrada padrão */
+.input-field {
+    -fx-background-color: -color-surface;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+    -fx-border-color: transparent;
+    -fx-padding: 8px 12px;
+    -fx-text-fill: -color-ink;
+    -fx-prompt-text-fill: -color-neutral-dark;
+}
+.input-field:focused {
+    -fx-border-color: -color-accent;
+    -fx-border-width: 2px;
+}
+
+/* Input de linha inferior (títulos editáveis) */
+.input-underline {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent -color-neutral-dark transparent;
+    -fx-border-width: 0 0 2px 0;
+    -fx-padding: 4px 2px;
+    -fx-prompt-text-fill: -color-neutral-dark;
+}
+.input-underline:focused {
+    -fx-border-color: transparent transparent -color-accent transparent;
+}
+
+/* Área de texto com fundo branco */
+.input-forms-white {
+    -fx-background-color: -color-white;
+    -fx-background-radius: 12px;
+    -fx-border-radius: 12px;
+    -fx-padding: 8px;
+}
+.input-forms-white .content {
+    -fx-background-color: -color-white;
+    -fx-background-radius: 12px;
+}
+
+/* Área de texto com fundo cinza */
+.input-forms-surface {
+    -fx-background-color: -color-surface;
+    -fx-background-radius: 12px;
+    -fx-padding: 12px;
+}
+.input-forms-surface .content {
+    -fx-background-color: -color-surface;
+}
+
+/* Dropdown/Select */
+.combo-box {
+    -fx-background-color: -color-neutral-mid;
+    -fx-background-radius: 8px;
+    -fx-padding: 2px 6px;
+}
+.combo-box .list-cell {
+    -fx-text-fill: -color-ink;
+    -fx-font-size: 13px;
+}
+
+/* Radio Button customizado */
+.radio-button .radio {
+    -fx-background-color: -color-white;
+    -fx-border-color: -color-neutral-light;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-padding: 4px;
+}
+.radio-button:selected .radio .dot {
+    -fx-background-color: -color-primary;
+    -fx-background-radius: 4px;
+}
+
+/* Checkbox */
+.check-box .box {
+    -fx-background-color: -color-neutral-mid;
+    -fx-background-radius: 6px;
+    -fx-border-radius: 6px;
+    -fx-pref-width: 22px;
+    -fx-pref-height: 22px;
+}
+.check-box:selected .box {
+    -fx-background-color: transparent;
+}
+.check-box:selected .mark {
+    -fx-background-color: -color-navy;
+}
+
+/* ==========================================================================
+   CONTAINERS, CARDS E NAVEGAÇÃO
+   ========================================================================== */
+
+/* Painel lateral ou seção destacada */
+.surface-panel {
+    -fx-background-color: -color-surface;
+    -fx-background-radius: 16px;
+    -fx-padding: 16px;
+}
+
+/* Janela flutuante/Modal */
+.modal-dialog {
+    -fx-background-color: -color-surface;
+    -fx-background-radius: 18px;
+    -fx-padding: 24px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.15), 16, 0, 0, 4);
+}
+
+/* Cabeçalho dropdown listas */
+.nav-group-header {
+    -fx-background-color: -color-neutral-light;
+    -fx-background-radius: 8px;
+    -fx-padding: 8px 12px;
+    -fx-font-size: 15px;
+    -fx-cursor: hand;
+}
+.nav-group-header:hover {
+    -fx-background-color: -color-neutral-mid;
+}
+
+/* Item de menu lateral */
+.nav-item {
+    -fx-font-family: "Bryndan Write";
+    -fx-font-size: 14px;
+    -fx-text-fill: -color-ink;
+    -fx-padding: 5px 10px;
+    -fx-background-radius: 6px;
+    -fx-cursor: hand;
+}
+.nav-item:hover {
+    -fx-background-color: -color-neutral-light;
+}
+
+/* Item de menu lateral selecionado */
+.nav-item-active {
+    -fx-font-family: "Bryndan Write";
+    -fx-font-size: 14px;
+    -fx-background-color: -color-accent;
+    -fx-text-fill: -color-white;
+    -fx-padding: 5px 10px;
+    -fx-background-radius: 6px;
+}
+
+/* Card com borda (itens clicáveis em lista) */
+.card-outlined {
+    -fx-background-color: -color-white;
+    -fx-border-color: -color-navy;
+    -fx-border-width: 2px;
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
+    -fx-padding: 10px 14px;
+    -fx-cursor: hand;
+}
+.card-outlined:hover {
+    -fx-background-color: -color-surface;
+}
+
+/* Card plano branco (blocos de leitura) */
+.card-flat {
+    -fx-background-color: -color-white;
+    -fx-background-radius: 12px;
+    -fx-padding: 14px;
+}
+
+/* Divisor horizontal */
+.separator .line {
+    -fx-border-color: -color-neutral-dark;
+    -fx-border-width: 1px 0 0 0;
+}
